@@ -57,6 +57,7 @@ struct Post {
     title: Option<String>,
     created_at: Option<DateTime<Utc>>,
     updated_at: Option<DateTime<Utc>>,
+    content: Option<String>,
 }
 
 // This is your resolver for the User model
@@ -120,6 +121,10 @@ impl Post {
 
     async fn updated_at(&self) -> &Option<DateTime<Utc>> {
         &self.updated_at
+    }
+
+    async fn content(&self) -> &Option<String> {
+        &self.content
     }
 
     async fn user(&self, ctx: &Context<'_>) -> Result<Option<User>> {
