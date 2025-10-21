@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useState, useMemo, use } from 'react'
 import {
   createColumnHelper,
   flexRender,
@@ -7,7 +7,6 @@ import {
 } from '@tanstack/react-table'
 import { useQuery } from '@apollo/client/react'
 import { GetUsersDocument, type GetUsersQuery, GetPostsDocument, type GetPostsQuery } from '../../__generated__/graphql'
-import { useState } from 'react'
 
 import { TableFilters } from './TableFilters'
 import PostsCell from './cells/PostsCell'
@@ -39,10 +38,15 @@ const columns = [
   }),
 ]
 
-const TableContent = memo(() => {
+const TableContent = memo(({ search } : { search: string }) => {
+  const userFilters = useMemo(() => {
+    const s = search?.trim()
+    return s ? { name: { contains: s } } : {};
+  }, [search])
+
   const { data: usersData, loading: usersLoading, error: usersError } = useQuery(GetUsersDocument, {
     variables: {
-      filters: {},
+      filters: userFilters,
     },
   })
 
@@ -137,7 +141,7 @@ export const Table = () => {
   return (
     <div className="p-2">
       <TableFilters searchValue={searchValue} setSearchValue={setSearchValue} />
-      <TableContent />
+      <TableContent search={searchValue} />
     </div>
   )
 }
